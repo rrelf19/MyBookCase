@@ -101,7 +101,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MobileModule.cs" />
+    <Compile Include="Controllers\BarCodeScanController.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controllers\BarCodeScanController.Designer.cs">
+      <DependentUpon>BarCodeScanController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MobileModule.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MobileModule.Designer.cs">
       <DependentUpon>MobileModule.cs</DependentUpon>
     </Compile>
@@ -112,6 +120,7 @@
       <DependentUpon>MobileModule.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Model.DesignedDiffs.xafml" />
+    <EmbeddedResource Include="Properties\licenses.licx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MyBookCase.Module\MyBookCase.Module.csproj">

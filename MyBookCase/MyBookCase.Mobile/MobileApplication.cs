@@ -8,9 +8,11 @@ using System.Collections.Generic;
 using DevExpress.ExpressApp.Xpo;
 using DevExpress.ExpressApp.Security;
 
-namespace MyBookCase.Mobile {
+namespace MyBookCase.Mobile
+{
     // For more typical usage scenarios, be sure to check out https://documentation.devexpress.com/eXpressAppFramework/DevExpressExpressAppWebWebApplicationMembersTopicAll.aspx
-    public partial class MyBookCaseMobileApplication : MobileApplication {
+    public partial class MyBookCaseMobileApplication : MobileApplication
+    {
         private DevExpress.ExpressApp.SystemModule.SystemModule module1;
         private DevExpress.ExpressApp.Mobile.SystemModule.SystemMobileModule module2;
         private MyBookCase.Module.MyBookCaseModule module3;
@@ -18,17 +20,21 @@ namespace MyBookCase.Mobile {
         private DevExpress.ExpressApp.Security.SecurityModule securityModule1;
 
         #region Default XAF configuration options (https://www.devexpress.com/kb=T501418)
-        static MyBookCaseMobileApplication() {
+        static MyBookCaseMobileApplication()
+        {
             DevExpress.Persistent.Base.PasswordCryptographer.EnableRfc2898 = true;
             DevExpress.Persistent.Base.PasswordCryptographer.SupportLegacySha512 = false;
         }
-        private void InitializeDefaults() {
+        private void InitializeDefaults()
+        {
             LinkNewObjectToParentImmediately = false;
         }
         #endregion
-        public MyBookCaseMobileApplication() {
+        public MyBookCaseMobileApplication()
+        {
             Tracing.Initialize();
-            if(ConfigurationManager.ConnectionStrings["ConnectionString"] != null) {
+            if (ConfigurationManager.ConnectionStrings["ConnectionString"] != null)
+            {
                 ConnectionString = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
             }
 #if EASYTEST
@@ -37,55 +43,66 @@ namespace MyBookCase.Mobile {
             }
 #endif
             InitializeComponent();
-			InitializeDefaults();
+            InitializeDefaults();
 #if DEBUG
-            if(System.Diagnostics.Debugger.IsAttached && CheckCompatibilityType == CheckCompatibilityType.DatabaseSchema) {
+            if (System.Diagnostics.Debugger.IsAttached && CheckCompatibilityType == CheckCompatibilityType.DatabaseSchema)
+            {
                 DatabaseUpdateMode = DatabaseUpdateMode.UpdateDatabaseAlways;
             }
 #endif
         }
-        protected override void CreateDefaultObjectSpaceProvider(CreateCustomObjectSpaceProviderEventArgs args) {
+        protected override void CreateDefaultObjectSpaceProvider(CreateCustomObjectSpaceProviderEventArgs args)
+        {
             args.ObjectSpaceProvider = new XPObjectSpaceProvider(GetDataStoreProvider(args.ConnectionString, args.Connection), true);
             args.ObjectSpaceProviders.Add(new NonPersistentObjectSpaceProvider(TypesInfo, null));
         }
-        private IXpoDataStoreProvider GetDataStoreProvider(string connectionString, System.Data.IDbConnection connection) {
+        private IXpoDataStoreProvider GetDataStoreProvider(string connectionString, System.Data.IDbConnection connection)
+        {
             System.Web.HttpApplicationState application = (System.Web.HttpContext.Current != null) ? System.Web.HttpContext.Current.Application : null;
             IXpoDataStoreProvider dataStoreProvider = null;
-            if(application != null && application["DataStoreProvider"] != null) {
+            if (application != null && application["DataStoreProvider"] != null)
+            {
                 dataStoreProvider = application["DataStoreProvider"] as IXpoDataStoreProvider;
             }
-            else {
+            else
+            {
                 dataStoreProvider = XPObjectSpaceProvider.GetDataStoreProvider(connectionString, connection, true);
-                if(application != null) {
+                if (application != null)
+                {
                     application["DataStoreProvider"] = dataStoreProvider;
                 }
             }
             return dataStoreProvider;
         }
-        private void MyBookCaseMobileApplication_DatabaseVersionMismatch(object sender, DevExpress.ExpressApp.DatabaseVersionMismatchEventArgs e) {
+        private void MyBookCaseMobileApplication_DatabaseVersionMismatch(object sender, DevExpress.ExpressApp.DatabaseVersionMismatchEventArgs e)
+        {
 #if EASYTEST
             e.Updater.Update();
             e.Handled = true;
 #else
-            if(System.Diagnostics.Debugger.IsAttached) {
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
                 e.Updater.Update();
                 e.Handled = true;
             }
-            else {
+            else
+            {
                 string message = "The application cannot connect to the specified database, " +
                     "because the database doesn't exist, its version is older " +
                     "than that of the application or its schema does not match " +
                     "the ORM data model structure. To avoid this error, use one " +
                     "of the solutions from the https://www.devexpress.com/kb=T367835 KB Article.";
 
-                if(e.CompatibilityError != null && e.CompatibilityError.Exception != null) {
+                if (e.CompatibilityError != null && e.CompatibilityError.Exception != null)
+                {
                     message += "\r\n\r\nInner exception: " + e.CompatibilityError.Exception.Message;
                 }
                 throw new InvalidOperationException(message);
             }
 #endif
         }
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             this.module1 = new DevExpress.ExpressApp.SystemModule.SystemModule();
             this.module2 = new DevExpress.ExpressApp.Mobile.SystemModule.SystemMobileModule();
             this.module3 = new MyBookCase.Module.MyBookCaseModule();
@@ -104,6 +121,21 @@ namespace MyBookCase.Mobile {
             this.DatabaseVersionMismatch += new System.EventHandler<DevExpress.ExpressApp.DatabaseVersionMismatchEventArgs>(this.MyBookCaseMobileApplication_DatabaseVersionMismatch);
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 
+        }
+
+        private void InitAdditionalPhoneGapPlugins()
+        {
+            AdditionalPhoneGapPlugins.Add("<gap:plugin name=\"cordova-plugin-barcodescanner\" source=\"npm\" />");
+            AdditionalPhoneGapPlugins.Add("<config-file platform=\"ios\" parent=\"NSCamerUsageDescription\" overwrite=\"true\">");
+            AdditionalPhoneGapPlugins.Add("<string>We are using the Camera for Bar Code Scan</string>");
+            AdditionalPhoneGapPlugins.Add("</config-file>");
+            /*
+            AdditionalPhoneGapPlugins.Add("<config-file target=\"AndroidManifest.xml\" parent=\"/*\" mode=\"merge\">");
+            AdditionalPhoneGapPlugins.Add("<uses-permission android:name=\"android.permission.CAMERA\" />");
+            AdditionalPhoneGapPlugins.Add("<uses-feature android:name=\"android.hardware.camera\" />");
+            AdditionalPhoneGapPlugins.Add("<uses-feature android:name=\"android.hardware.camera.autofocus\" />");
+            AdditionalPhoneGapPlugins.Add("</config-file>");
+            */
         }
     }
 }
